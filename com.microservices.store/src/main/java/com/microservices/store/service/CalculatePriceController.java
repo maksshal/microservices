@@ -45,4 +45,22 @@ public class CalculatePriceController
 		
 		return FORMATTER.format(PHONE_PRICES.get(phoneModel) * exchangeRate);
 	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public String getPhonePriceWithHystrix(String phoneModel)
+	{
+		RestTemplate restTemplate = new RestTemplate();
+		
+		double exchangeRate;
+		try
+		{
+			exchangeRate = restTemplate.getForObject(new URI("http://localhost:7001/getCurrentUSDollarExchangeRate"), Double.class);
+		}
+		catch (Exception e)
+		{
+			exchangeRate = EXCHANGE_RATE_DEFAULT;
+		}
+		
+		return FORMATTER.format(PHONE_PRICES.get(phoneModel) * exchangeRate);
+	}
 }
