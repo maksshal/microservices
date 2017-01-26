@@ -16,8 +16,10 @@ public class ExchangeRateController
 	private static final Random RANDOM = new Random();
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String getCurrentUSDollarExchangeRate()
+	public String getCurrentUSDollarExchangeRate() throws InterruptedException
 	{
+		Thread.sleep(10_000);
+		
 		if(RANDOM.nextBoolean())
 		{
 			return FORMATTER.format(EXCHANGE_RATE_FORECAST + RANDOM.nextDouble());
