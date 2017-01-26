@@ -20,8 +20,9 @@ public class PhoneStoreRepo
 		PHONE_PRICES.put("Meizu Pro 6", 300.0);
 	}
 	
-	public double getPhonePriceInUSD(String phoneModel)
+	public double getPhonePriceInUSD(String phoneModel) throws InterruptedException
 	{
+//		Thread.sleep(10_000);
 		return PHONE_PRICES.get(phoneModel);
 	}
 }

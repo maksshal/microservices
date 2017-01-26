@@ -2,6 +2,8 @@ package com.microservices.store.controller;
 
 import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class CalculatePriceController
 	private PhoneStoreRepo phoneStoreRepo;
 	
 	@RequestMapping(value = "getPhonePrice", method = RequestMethod.GET)
-	public String getPhonePrice(String phoneModel)
+	public String getPhonePrice(String phoneModel) throws InterruptedException
 	{
 		RestTemplate restTemplate = new RestTemplate();
 		double exchangeRate;
@@ -42,10 +44,14 @@ public class CalculatePriceController
 	}
 	
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
-	public String getPhonePriceWithHystrix(String phoneModel)
+	public String getPhonePriceWithHystrix(String phoneModel) throws InterruptedException, ExecutionException
 	{
 		ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand();
-		double exchangeRate = exchangeRateMicroserviceCommand.execute();
+		Future<Double> exchangeRate = exchangeRateMicroserviceCommand.queue();
+		
+		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		
+		Double exchangeRateValue = exchangeRate.get();
 		
 		if(exchangeRateMicroserviceCommand.isResponseFromFallback())
 		{
@@ -67,7 +73,6 @@ public class CalculatePriceController
 			LOGGER.info("Hystrix: request executed successfully.");
 		}
 		
-		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
-		return FORMATTER.format(phonePriceInUSD * exchangeRate);
+		return FORMATTER.format(phonePriceInUSD * exchangeRateValue);
 	}
 }
