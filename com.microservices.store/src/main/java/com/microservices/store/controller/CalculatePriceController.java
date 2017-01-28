@@ -1,6 +1,5 @@
 package com.microservices.store.controller;
 
-import java.net.URI;
 import java.text.DecimalFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -15,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.microservices.store.service.ExchangeRateMicroserviceCommand;
 import com.microservices.store.service.PhoneStoreRepo;
 import com.microservices.store.util.ExchangeRateUtil;
+import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
 @RestController
 public class CalculatePriceController
@@ -32,7 +32,7 @@ public class CalculatePriceController
 		double exchangeRate;
 		try
 		{
-			exchangeRate = restTemplate.getForObject(new URI("http://localhost:7001/getCurrentUSDollarExchangeRate"), Double.class);
+			exchangeRate = restTemplate.getForObject("http://localhost:7001/getCurrentUSDollarExchangeRate?currency={currency}", Double.class, "USD");
 		}
 		catch (Exception e)
 		{
@@ -46,33 +46,41 @@ public class CalculatePriceController
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
 	public String getPhonePriceWithHystrix(String phoneModel) throws InterruptedException, ExecutionException
 	{
-		ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand();
-		Future<Double> exchangeRate = exchangeRateMicroserviceCommand.queue();
+		HystrixRequestContext hystrixRequestContext = HystrixRequestContext.initializeContext();
 		
-		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
-		
-		Double exchangeRateValue = exchangeRate.get();
-		
-		if(exchangeRateMicroserviceCommand.isResponseFromFallback())
+		try
 		{
-			if(exchangeRateMicroserviceCommand.isResponseShortCircuited())
+			ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand("USD");
+			Future<Double> exchangeRate = exchangeRateMicroserviceCommand.queue();
+			double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+			Double exchangeRateValue = exchangeRate.get();
+			
+			if(exchangeRateMicroserviceCommand.isResponseFromFallback())
 			{
-				LOGGER.info("CIRCUIT OPENED, so calling fallback immidiately.");
-			}
-			else if(exchangeRateMicroserviceCommand.isResponseTimedOut())
-			{
-				LOGGER.info("Hystrix: request timeout.");
+				if(exchangeRateMicroserviceCommand.isResponseShortCircuited())
+				{
+					LOGGER.info("CIRCUIT OPENED, so calling fallback immidiately.");
+				}
+				else if(exchangeRateMicroserviceCommand.isResponseTimedOut())
+				{
+					LOGGER.info("Hystrix: request timeout.");
+				}
+				else
+				{
+					LOGGER.info("Hystrix: executing fallback.");
+				}
 			}
 			else
 			{
-				LOGGER.info("Hystrix: executing fallback.");
+				LOGGER.info("Hystrix: request executed successfully.");
 			}
+			
+			LOGGER.info("USD to EUR rate: " + ExchangeRateUtil.calculateUsdToEurExcahngeRate());
+			
+			return FORMATTER.format(phonePriceInUSD * exchangeRateValue);
 		}
-		else
-		{
-			LOGGER.info("Hystrix: request executed successfully.");
+		finally {
+			hystrixRequestContext.shutdown();
 		}
-		
-		return FORMATTER.format(phonePriceInUSD * exchangeRateValue);
 	}
 }

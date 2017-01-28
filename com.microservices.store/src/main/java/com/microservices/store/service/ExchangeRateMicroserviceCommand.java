@@ -1,7 +1,5 @@
 package com.microservices.store.service;
 
-import java.net.URI;
-
 import org.springframework.web.client.RestTemplate;
 
 import com.microservices.store.util.ExchangeRateUtil;
@@ -13,7 +11,9 @@ import com.netflix.hystrix.HystrixThreadPoolProperties;
 
 public class ExchangeRateMicroserviceCommand extends HystrixCommand<Double>
 {
-	public ExchangeRateMicroserviceCommand()
+	private String currency;
+	
+	public ExchangeRateMicroserviceCommand(String currency)
 	{
 		super(
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
@@ -36,6 +36,8 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<Double>
 					)
 					
 			 );
+		
+		this.currency = currency;
 	}
 
 	@Override
@@ -43,12 +45,17 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<Double>
 	{
 		RestTemplate restTemplate = new RestTemplate();
 		
-		return restTemplate.getForObject(new URI("http://localhost:7001/getCurrentUSDollarExchangeRate"), Double.class);
+		return restTemplate.getForObject("http://localhost:7001/getCurrentUSDollarExchangeRate?currency={currency}", Double.class, currency);
 	}
 
 	@Override
 	protected Double getFallback()
 	{
 		return ExchangeRateUtil.EXCHANGE_RATE_DEFAULT;
+	}
+	
+	@Override
+	protected String getCacheKey() {
+		return currency;
 	}
 }

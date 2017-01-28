@@ -13,24 +13,42 @@ public class ExchangeRateController
 {
 	private static final Logger LOGGER = Logger.getLogger(ExchangeRateController.class);
 	
-	private static final double EXCHANGE_RATE_FORECAST = 27.2;
+	private static final double EXCHANGE_RATE_FORECAST_USD = 27.2;
+	private static final double EXCHANGE_RATE_FORECAST_EUR = 30.0;
 	private static final DecimalFormat FORMATTER = new DecimalFormat("###.##");
 	
 	private static final Random RANDOM = new Random();
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String getCurrentUSDollarExchangeRate() throws InterruptedException
+	public String getCurrentUSDollarExchangeRate(String currency) throws InterruptedException
 	{
-		LOGGER.info("Request arrived to get exchange rate");
+		LOGGER.info("Request arrived to get exchange rate for currency: " + currency);
 //		Thread.sleep(10_000);
 		
-		if(RANDOM.nextBoolean())
+		if(currency.equals("USD"))
 		{
-			return FORMATTER.format(EXCHANGE_RATE_FORECAST + RANDOM.nextDouble());
+			if(RANDOM.nextBoolean())
+			{
+				return FORMATTER.format(EXCHANGE_RATE_FORECAST_USD + RANDOM.nextDouble());
+			}
+			else
+			{
+				return FORMATTER.format(EXCHANGE_RATE_FORECAST_USD - RANDOM.nextDouble());
+			}
 		}
-		else
+		
+		if(currency.equals("EUR"))
 		{
-			return FORMATTER.format(EXCHANGE_RATE_FORECAST - RANDOM.nextDouble());
+			if(RANDOM.nextBoolean())
+			{
+				return FORMATTER.format(EXCHANGE_RATE_FORECAST_EUR + RANDOM.nextDouble());
+			}
+			else
+			{
+				return FORMATTER.format(EXCHANGE_RATE_FORECAST_EUR - RANDOM.nextDouble());
+			}
 		}
+		
+		return null;
 	}
 }
