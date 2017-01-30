@@ -22,26 +22,9 @@
 			<artifactId>hystrix-core</artifactId>
 			<version>1.5.9</version>
 		</dependency>
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.cloud</groupId> -->
-<!-- 			<artifactId>spring-cloud-starter-hystrix-dashboard</artifactId> -->
-<!-- 		</dependency> -->
 	</dependencies>
 
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
-
-<!-- 	<dependencyManagement> -->
-<!-- 		<dependencies> -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>org.springframework.cloud</groupId> -->
-<!-- 				<artifactId>spring-cloud-dependencies</artifactId> -->
-<!-- 				<version>Camden.SR4</version> -->
-<!-- 				<type>pom</type> -->
-<!-- 				<scope>import</scope> -->
-<!-- 			</dependency> -->
-<!-- 		</dependencies> -->
-<!-- 	</dependencyManagement> -->
 </project>
