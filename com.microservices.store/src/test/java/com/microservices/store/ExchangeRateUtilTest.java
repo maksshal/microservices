@@ -10,15 +10,16 @@ import rx.Subscriber;
 import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.service.ObservableExchangeRateCommand;
 import com.microservices.store.util.ExchangeRateUtil;
+import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
 public class ExchangeRateUtilTest
 {
 	private static final Logger LOGGER = Logger
 			.getLogger(ExchangeRateUtilTest.class);
 	
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args) throws InterruptedException, ExecutionException
 	{
-		testCalculateUsdToEurExcahngeRate();
+		testCalculateUsdToEurExcahngeRateCollapsed();
 	}
 	
 	public static void testCalculateUsdToEurExcahngeRate()
@@ -91,6 +92,26 @@ public class ExchangeRateUtilTest
 		
 		long end = System.nanoTime();
 		LOGGER.info("STREAM execution time in millis: " + (end - start)
+				/ 1_000_000);
+	}
+	
+	public static void testCalculateUsdToEurExcahngeRateCollapsed()
+			throws InterruptedException, ExecutionException
+	{
+		long start = System.nanoTime();
+		
+		HystrixRequestContext context = HystrixRequestContext.initializeContext();
+		try
+		{
+			LOGGER.info("USD to EUR: " + ExchangeRateUtil.calculateUsdToEurExcahngeRateCollapsed());
+		}
+		finally
+		{
+			context.shutdown();
+		}
+		
+		long end = System.nanoTime();
+		LOGGER.info("COLLAPSED execution time in millis: " + (end - start)
 				/ 1_000_000);
 	}
 }

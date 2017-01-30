@@ -9,6 +9,7 @@ import rx.Observable;
 
 import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.service.ExchangeRateMicroserviceCommand;
+import com.microservices.store.service.ExchangeRateRequestCollapser;
 
 public class ExchangeRateUtil
 {
@@ -34,6 +35,14 @@ public class ExchangeRateUtil
 	{
 		Future<ExchangeRate> usdToUah = new ExchangeRateMicroserviceCommand(USD).queue();
 		Future<ExchangeRate> eurToUah = new ExchangeRateMicroserviceCommand(EUR).queue();
+		
+		return usdToUah.get().getExchangeRate() / eurToUah.get().getExchangeRate();
+	}
+	
+	public static Double calculateUsdToEurExcahngeRateCollapsed() throws InterruptedException, ExecutionException
+	{
+		Future<ExchangeRate> usdToUah = new ExchangeRateRequestCollapser(USD).queue();
+		Future<ExchangeRate> eurToUah = new ExchangeRateRequestCollapser(EUR).queue();
 		
 		return usdToUah.get().getExchangeRate() / eurToUah.get().getExchangeRate();
 	}

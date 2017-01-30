@@ -56,7 +56,8 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 	}
 	
 	@Override
-	protected String getCacheKey() {
+	protected String getCacheKey()
+	{
 		return currency;
 	}
 }
