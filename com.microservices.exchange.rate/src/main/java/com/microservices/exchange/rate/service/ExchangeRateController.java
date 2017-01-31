@@ -54,4 +54,10 @@ public class ExchangeRateController
 			return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency) - RANDOM.nextDouble());
 		}
 	}
+	
+	@RequestMapping(value = "/")
+	public String ping()
+	{
+		return "OK";
+	}
 }

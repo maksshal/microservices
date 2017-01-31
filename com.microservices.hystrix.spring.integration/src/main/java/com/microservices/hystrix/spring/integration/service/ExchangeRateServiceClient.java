@@ -1,6 +1,7 @@
 package com.microservices.hystrix.spring.integration.service;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,12 +14,14 @@ public class ExchangeRateServiceClient
 {
 	private static final Logger LOGGER = Logger.getLogger(ExchangeRateServiceClient.class);
 	
+	@Autowired
+	private RestTemplate restTemplate;
+	
 	@HystrixCommand(fallbackMethod = "defaultExchangeRate",
 			commandProperties = {@HystrixProperty(name="execution.isolation.strategy", value="THREAD")})
     public ExchangeRate getExchangeRate()
 	{
-		RestTemplate restTemplate = new RestTemplate();
-		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject("http://localhost:7001/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, "USD");
+		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject("http://exchange-rate/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, "USD");
 		return exchangeRateResponseEntity;
     }
  
