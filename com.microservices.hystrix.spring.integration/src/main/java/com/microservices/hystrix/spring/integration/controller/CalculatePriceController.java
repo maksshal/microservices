@@ -19,8 +19,8 @@ public class CalculatePriceController
 	@Autowired
 	private ExchangeRateServiceClient exchangeRateServiceClient;
 	
-	@RequestMapping(value = "getPhonePrice", method = RequestMethod.GET)
-	public PhonePrice getPhonePrice(String phoneModel) throws InterruptedException
+	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
+	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
 	{
 		ExchangeRate exchangeRate = exchangeRateServiceClient.getExchangeRate();
 		
