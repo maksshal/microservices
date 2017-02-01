@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.domain.PhonePrice;
 import com.microservices.store.service.ExchangeRateMicroserviceCommand;
+import com.microservices.store.service.ExchangeRateMicroserviceCommandSimple;
 import com.microservices.store.service.PhoneStoreRepo;
 import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
@@ -48,6 +49,16 @@ public class CalculatePriceController
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
 	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException, ExecutionException
 	{
+		ExchangeRateMicroserviceCommandSimple exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommandSimple("USD");
+		ExchangeRate exchangeRate = exchangeRateMicroserviceCommand.execute();
+		
+		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate.getExchangeRate());
+	}
+	
+	@RequestMapping(value = "getPhonePriceWithHystrixAdvanced", method = RequestMethod.GET)
+	public PhonePrice getPhonePriceWithHystrixAdvanced(String phoneModel) throws InterruptedException, ExecutionException
+	{
 		HystrixRequestContext hystrixRequestContext = HystrixRequestContext.initializeContext();
 		
 		try
@@ -81,7 +92,8 @@ public class CalculatePriceController
 			
 			return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRateResponse.getExchangeRate());
 		}
-		finally {
+		finally
+		{
 			hystrixRequestContext.shutdown();
 		}
 	}

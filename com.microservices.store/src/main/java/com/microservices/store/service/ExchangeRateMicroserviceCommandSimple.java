@@ -8,33 +8,22 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
-import com.netflix.hystrix.HystrixThreadPoolProperties;
 
-public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate>
+public class ExchangeRateMicroserviceCommandSimple extends HystrixCommand<ExchangeRate>
 {
 	private String currency;
 	
-	public ExchangeRateMicroserviceCommand(String currency)
+	public ExchangeRateMicroserviceCommandSimple(String currency)
 	{
 		super(
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-						.withCircuitBreakerEnabled(true)
-						.withCircuitBreakerRequestVolumeThreshold(10)
-						.withCircuitBreakerErrorThresholdPercentage(50)
-						.withCircuitBreakerSleepWindowInMilliseconds(5000)
-						
-						.withExecutionTimeoutInMilliseconds(5_000)
 						
 						.withFallbackIsolationSemaphoreMaxConcurrentRequests(100)
 						
-						.withExecutionIsolationStrategy(ExecutionIsolationStrategy.THREAD)
+						.withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
+						.withExecutionIsolationSemaphoreMaxConcurrentRequests(100)
 					)
-					.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
-						.withAllowMaximumSizeToDivergeFromCoreSize(true)
-						.withMaximumSize(100)
-					)
-					
 			 );
 		
 		this.currency = currency;
@@ -52,11 +41,5 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 	protected ExchangeRate getFallback()
 	{
 		return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency));
-	}
-	
-	@Override
-	protected String getCacheKey()
-	{
-		return currency;
 	}
 }
