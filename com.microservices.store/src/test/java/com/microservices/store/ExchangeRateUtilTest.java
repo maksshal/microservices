@@ -19,7 +19,7 @@ public class ExchangeRateUtilTest
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException
 	{
-		testCalculateUsdToEurExcahngeRateCollapsed();
+		testObservable();
 	}
 	
 	public static void testCalculateUsdToEurExcahngeRate()
