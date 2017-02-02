@@ -60,11 +60,12 @@ public class ObservableExchangeRateCommand extends HystrixObservableCommand<Exch
 			{
 				try
 				{
-                    if (!subscriber.isUnsubscribed())
-                    {
-                    	subscriber.onNext(new ExchangeRate("UAH", ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
-                        subscriber.onCompleted();
-                    }
+					while(!subscriber.isUnsubscribed())
+                	{
+						subscriber.onNext(new ExchangeRate("UAH", ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
+                		Thread.sleep(1_000);
+                	}
+                    subscriber.onCompleted();
                 }
 				catch (Exception e)
 				{

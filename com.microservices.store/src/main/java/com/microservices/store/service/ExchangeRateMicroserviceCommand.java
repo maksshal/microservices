@@ -19,7 +19,7 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 		super(
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-						.withCircuitBreakerEnabled(true)
+						.withCircuitBreakerEnabled(false)
 						.withCircuitBreakerRequestVolumeThreshold(10)
 						.withCircuitBreakerErrorThresholdPercentage(50)
 						.withCircuitBreakerSleepWindowInMilliseconds(5000)
