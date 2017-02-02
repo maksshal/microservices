@@ -19,7 +19,7 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 		super(
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-						.withCircuitBreakerEnabled(true)
+						.withCircuitBreakerEnabled(false)
 						.withCircuitBreakerRequestVolumeThreshold(10)
 						.withCircuitBreakerErrorThresholdPercentage(50)
 						.withCircuitBreakerSleepWindowInMilliseconds(5000)
@@ -54,9 +54,9 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 		return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency));
 	}
 	
-	@Override
-	protected String getCacheKey()
-	{
-		return currency;
-	}
+//	@Override
+//	protected String getCacheKey()
+//	{
+//		return currency;
+//	}
 }
