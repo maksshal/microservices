@@ -54,9 +54,9 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 		return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency));
 	}
 	
-	@Override
-	protected String getCacheKey()
-	{
-		return currency;
-	}
+//	@Override
+//	protected String getCacheKey()
+//	{
+//		return currency;
+//	}
 }
