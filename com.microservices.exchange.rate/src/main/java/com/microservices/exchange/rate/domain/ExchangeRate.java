@@ -1,14 +1,17 @@
 package com.microservices.exchange.rate.domain;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 
+/**
+ * Contains exchange rate for two currencies
+ */
 public class ExchangeRate {
 	private String currencyToConvertTo;
 	private String currencyToConvertFrom;
-	private Double exchangeRate;
+	private BigDecimal exchangeRate;
 
-	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, Double exchangeRate) {
-		super();
+	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, BigDecimal exchangeRate)
+	{
 		this.currencyToConvertTo = currencyToConvertTo;
 		this.currencyToConvertFrom = currencyToConvertFrom;
 		this.exchangeRate = exchangeRate;
@@ -22,8 +25,8 @@ public class ExchangeRate {
 		return currencyToConvertFrom;
 	}
 
-	public String getExchangeRate() {
-		return new DecimalFormat("###.##").format(exchangeRate);
+	public BigDecimal getExchangeRate() {
+		return exchangeRate;
 	}
 
 }

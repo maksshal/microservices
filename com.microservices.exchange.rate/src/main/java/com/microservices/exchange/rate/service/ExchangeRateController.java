@@ -1,5 +1,6 @@
 package com.microservices.exchange.rate.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,30 +30,34 @@ public class ExchangeRateController
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "getCurrentUAHExchangeRateForCurrencies")
-	public List<ExchangeRate> getCurrentUAHExchangeRateForCurrencies(String currencies) throws InterruptedException
+	public List<ExchangeRate> getCurrentUAHExchangeRateForCurrencies(String currencies)
 	{
 		LOGGER.info("Request arrived to get exchange rate for currencies: " + currencies);
 		
-		String[] curenciesList = currencies.split(",");
+		String[] currenciesList = currencies.split(",");
 		List<ExchangeRate> exchangeRates = new ArrayList<>();
-		for (String currency : curenciesList)
+		for (String currency : currenciesList)
 		{
 			exchangeRates.add(generateExchangeRate(currency));
 		}
 		
 		return exchangeRates;
 	}
-	
+
+	/**
+	 * Generate random exchange rate from currency to UAH
+	 * @param currency
+	 * @return
+	 */
 	private ExchangeRate generateExchangeRate(String currency)
 	{
-		if(RANDOM.nextBoolean())
-		{
-			return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency) + RANDOM.nextDouble());
-		}
-		else
-		{
-			return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency) - RANDOM.nextDouble());
-		}
+		BigDecimal defaultExchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency);
+		BigDecimal deviation = new BigDecimal(RANDOM.nextDouble());
+
+		BigDecimal currentExchangeRate = RANDOM.nextBoolean() ?
+				defaultExchangeRate.add(deviation) : defaultExchangeRate.subtract(deviation);
+		currentExchangeRate = currentExchangeRate.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		return new ExchangeRate("UAH", currency, currentExchangeRate);
 	}
 	
 	@RequestMapping(value = "/")
