@@ -25,7 +25,13 @@ public class CalculatePriceController
 	
 	@Autowired
 	private PhoneStoreRepo phoneStoreRepo;
-	
+
+	/**
+	 * Get phone price without using Hystrix
+	 * @param phoneModel
+	 * @return
+	 * @throws InterruptedException
+	 */
 	@RequestMapping(value = "getPhonePrice", method = RequestMethod.GET)
 	public PhonePrice getPhonePrice(String phoneModel) throws InterruptedException
 	{
@@ -33,7 +39,7 @@ public class CalculatePriceController
 		double exchangeRate;
 		try
 		{
-			ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject("http://localhost:7001/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, "USD");
+			ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, "USD");
 			exchangeRate = exchangeRateResponseEntity.getExchangeRate();
 		}
 		catch (Exception e)
@@ -45,9 +51,16 @@ public class CalculatePriceController
 		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
 		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate);
 	}
-	
+
+	/**
+	 * Get phone price using Hystrix fallbacks
+	 * @param phoneModel
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
-	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException, ExecutionException
+	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
 	{
 		ExchangeRateMicroserviceCommandSimple exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommandSimple("USD");
 		ExchangeRate exchangeRate = exchangeRateMicroserviceCommand.execute();
@@ -55,7 +68,14 @@ public class CalculatePriceController
 		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
 		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate.getExchangeRate());
 	}
-	
+
+	/**
+	 * Retrieve phone price in UAH after converting it from USD, using Hystrix async execution, logging and caching
+	 * @param phoneModel
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	@RequestMapping(value = "getPhonePriceWithHystrixAdvanced", method = RequestMethod.GET)
 	public PhonePrice getPhonePriceWithHystrixAdvanced(String phoneModel) throws InterruptedException, ExecutionException
 	{
@@ -64,15 +84,19 @@ public class CalculatePriceController
 		try
 		{
 			ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand("USD");
+
+			//Here microservice call will be non-blocking...
 			Future<ExchangeRate> exchangeRate = exchangeRateMicroserviceCommand.queue();
+			//...so while it is executing, we may retrieve some info from, lets say, database...
 			double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+			//...and only then block
 			ExchangeRate exchangeRateResponse = exchangeRate.get();
 			
 			if(exchangeRateMicroserviceCommand.isResponseFromFallback())
 			{
 				if(exchangeRateMicroserviceCommand.isResponseShortCircuited())
 				{
-					LOGGER.info("CIRCUIT OPENED, so calling fallback immidiately.");
+					LOGGER.info("CIRCUIT OPENED, so calling fallback immediately.");
 				}
 				else if(exchangeRateMicroserviceCommand.isResponseTimedOut())
 				{
@@ -87,9 +111,11 @@ public class CalculatePriceController
 			{
 				LOGGER.info("Hystrix: request executed successfully.");
 			}
-			
-			LOGGER.info("USD to EUR rate: " + ExchangeRateUtil.calculateUsdToEurExcahngeRate());
-			
+
+			//using this call just to make sure that we reused value from a cache, since this request is executed
+			//in the same Hystrix context
+			LOGGER.info("USD to EUR rate: " + ExchangeRateUtil.calculateUsdToEurExchangeRate());
+
 			return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRateResponse.getExchangeRate());
 		}
 		finally

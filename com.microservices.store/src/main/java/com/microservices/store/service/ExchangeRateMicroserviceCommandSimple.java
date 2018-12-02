@@ -9,6 +9,9 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 
+/**
+ * Exchange rate command with semaphore isolation
+ */
 public class ExchangeRateMicroserviceCommandSimple extends HystrixCommand<ExchangeRate>
 {
 	private String currency;
@@ -19,7 +22,7 @@ public class ExchangeRateMicroserviceCommandSimple extends HystrixCommand<Exchan
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
 						
-						.withFallbackIsolationSemaphoreMaxConcurrentRequests(100)
+						.withFallbackIsolationSemaphoreMaxConcurrentRequests(100)	//more concurrent fallbacks will cause exception
 						
 						.withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
 						.withExecutionIsolationSemaphoreMaxConcurrentRequests(100)
@@ -30,11 +33,10 @@ public class ExchangeRateMicroserviceCommandSimple extends HystrixCommand<Exchan
 	}
 
 	@Override
-	protected ExchangeRate run() throws Exception
+	protected ExchangeRate run()
 	{
 		RestTemplate restTemplate = new RestTemplate();
-		
-		return restTemplate.getForObject("http://localhost:7001/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, currency);
+		return restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, currency);
 	}
 
 	@Override

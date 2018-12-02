@@ -2,13 +2,14 @@ package com.microservices.store.domain;
 
 import java.text.DecimalFormat;
 
-public class PhonePrice {
+public class PhonePrice
+{
 	private String modelName;
 	private Double priceInUSD;
 	private Double priceInUAH;
 
-	public PhonePrice(String modelName, Double priceInUSD, Double priceInUAH) {
-		super();
+	public PhonePrice(String modelName, Double priceInUSD, Double priceInUAH)
+	{
 		this.modelName = modelName;
 		this.priceInUSD = priceInUSD;
 		this.priceInUAH = priceInUAH;

@@ -3,9 +3,13 @@ package com.microservices.store.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-@Service
+/**
+ * Repository mock for storing phone prices in USD
+ */
+@Repository
 public class PhoneStoreRepo
 {
 	private static final Map<String, Double> PHONE_PRICES = new HashMap<>();

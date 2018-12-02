@@ -1,17 +1,17 @@
 package com.microservices.store.domain;
 
-public class ExchangeRate {
-	
+public class ExchangeRate
+{
 	private String currencyToConvertTo;
 	private String currencyToConvertFrom;
 	private Double exchangeRate;
 
-	public ExchangeRate() {
-	
+	public ExchangeRate()
+	{
 	}
-	
-	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, Double exchangeRate) {
-		super();
+
+	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, Double exchangeRate)
+	{
 		this.currencyToConvertTo = currencyToConvertTo;
 		this.currencyToConvertFrom = currencyToConvertFrom;
 		this.exchangeRate = exchangeRate;

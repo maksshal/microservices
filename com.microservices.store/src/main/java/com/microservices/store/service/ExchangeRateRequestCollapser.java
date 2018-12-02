@@ -17,13 +17,17 @@ import com.netflix.hystrix.HystrixCollapserProperties;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
+/**
+ * Collapser which will collect all requests during a time window and execute only one HTTP call instead
+ */
 public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, ExchangeRate>, ExchangeRate, String>
 {
 	private String currency;
-	
+
 	public ExchangeRateRequestCollapser(String currency)
 	{
-		super(HystrixCollapser.Setter.withCollapserKey(HystrixCollapserKey.Factory.asKey("ExchangeRateRequestCollapser"))
+		super(HystrixCollapser.Setter
+				.withCollapserKey(HystrixCollapserKey.Factory.asKey("ExchangeRateRequestCollapser"))
                 .andCollapserPropertiesDefaults(HystrixCollapserProperties.Setter().withTimerDelayInMilliseconds(500)));
 		this.currency = currency;
 	}
@@ -35,7 +39,8 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
 	}
 
 	@Override
-	protected HystrixCommand<Map<String, ExchangeRate>> createCommand(Collection<CollapsedRequest<ExchangeRate, String>> requests)
+	protected HystrixCommand<Map<String, ExchangeRate>> createCommand(
+			Collection<CollapsedRequest<ExchangeRate, String>> requests)
 	{
 		return new ExchangeRateBatchCommand(requests);
 	}
@@ -50,8 +55,11 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
             request.setResponse(batchResponse.get(request.getArgument()));
         }
 	}
-	
-	private static final class ExchangeRateBatchCommand extends HystrixCommand<Map<String, ExchangeRate>>
+
+	/**
+	 * Command which contains logic how to collapse several similar requests to one HTTP request
+	 */
+	private class ExchangeRateBatchCommand extends HystrixCommand<Map<String, ExchangeRate>>
 	{
         private final Collection<CollapsedRequest<ExchangeRate, String>> requests;
 
@@ -66,7 +74,7 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
         protected Map<String, ExchangeRate> run()
         {
             String currencies = requests.stream()
-					            	.map((request) -> request.getArgument())
+					            	.map(CollapsedRequest::getArgument)
 					            	.collect(Collectors.joining(","));
             
             RestTemplate restTemplate = new RestTemplate();
@@ -82,7 +90,7 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
         @Override
         protected Map<String, ExchangeRate> getFallback()
         {
-        	Map<String, ExchangeRate> response = new HashMap<String, ExchangeRate>();
+        	Map<String, ExchangeRate> response = new HashMap<>();
         	response.put(ExchangeRateUtil.USD, new ExchangeRate("UAH", ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
         	response.put(ExchangeRateUtil.EUR, new ExchangeRate("UAH", ExchangeRateUtil.EUR, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.EUR)));
         	return response;

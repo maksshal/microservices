@@ -19,20 +19,20 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 		super(
 				Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExchangeRateMicroservice"))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-						.withCircuitBreakerEnabled(false)
-						.withCircuitBreakerRequestVolumeThreshold(10)
-						.withCircuitBreakerErrorThresholdPercentage(50)
-						.withCircuitBreakerSleepWindowInMilliseconds(5000)
+						.withCircuitBreakerEnabled(true)
+						.withCircuitBreakerRequestVolumeThreshold(10)		//for every 10 requests
+						.withCircuitBreakerErrorThresholdPercentage(50)		//if 50% of them fail, open a circuit
+						.withCircuitBreakerSleepWindowInMilliseconds(5000)	//and keep it opened for 5 secs before retry
 						
-						.withExecutionTimeoutInMilliseconds(5_000)
+						.withExecutionTimeoutInMilliseconds(5_000)			//if call runs longer, fallback will be executed
 						
-						.withFallbackIsolationSemaphoreMaxConcurrentRequests(100)
+						.withFallbackIsolationSemaphoreMaxConcurrentRequests(100)	//if more requests are executed simultaneously, fallback will happen
 						
-						.withExecutionIsolationStrategy(ExecutionIsolationStrategy.THREAD)
+						.withExecutionIsolationStrategy(ExecutionIsolationStrategy.THREAD)	//run every request in a separate thread
 					)
 					.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
 						.withAllowMaximumSizeToDivergeFromCoreSize(true)
-						.withMaximumSize(100)
+						.withMaximumSize(100)	//thread pool size
 					)
 					
 			 );
@@ -41,11 +41,11 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 	}
 
 	@Override
-	protected ExchangeRate run() throws Exception
+	protected ExchangeRate run()
 	{
 		RestTemplate restTemplate = new RestTemplate();
 		
-		return restTemplate.getForObject("http://localhost:7001/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, currency);
+		return restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, currency);
 	}
 
 	@Override
@@ -53,7 +53,8 @@ public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate
 	{
 		return new ExchangeRate("UAH", currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency));
 	}
-	
+
+	//Enable this if we want to use caching.
 //	@Override
 //	protected String getCacheKey()
 //	{
