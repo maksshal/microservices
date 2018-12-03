@@ -56,7 +56,7 @@ public class ExchangeRateController
 
 		BigDecimal currentExchangeRate = RANDOM.nextBoolean() ?
 				defaultExchangeRate.add(deviation) : defaultExchangeRate.subtract(deviation);
-		currentExchangeRate = currentExchangeRate.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		currentExchangeRate = currentExchangeRate.setScale(2, BigDecimal.ROUND_HALF_UP);
 		return new ExchangeRate("UAH", currency, currentExchangeRate);
 	}
 	
