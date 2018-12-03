@@ -1,5 +1,6 @@
 package com.microservices.store;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,7 @@ public class ExchangeRateUtilTest
 	private static void testCalculateUsdToEurExcahngeRate()
 	{
 		long start = System.nanoTime();
-		double result = ExchangeRateUtil.calculateUsdToEurExchangeRate();
+		BigDecimal result = ExchangeRateUtil.calculateUsdToEurExchangeRate();
 		long end = System.nanoTime();
 		LOGGER.info("SYNC execution time in millis: " + (end - start)
 				/ 1_000_000 + " Result: " + result);
@@ -49,7 +50,7 @@ public class ExchangeRateUtilTest
 			throws InterruptedException, ExecutionException
 	{
 		long start = System.nanoTime();
-		double result = ExchangeRateUtil.calculateUsdToEurExchangeRateAsync();
+		BigDecimal result = ExchangeRateUtil.calculateUsdToEurExchangeRateAsync();
 		long end = System.nanoTime();
 		LOGGER.info("ASYNC execution time in millis: " + (end - start)
 				/ 1_000_000 + " Result: " + result);
@@ -64,7 +65,7 @@ public class ExchangeRateUtilTest
 	{
 		long start = System.nanoTime();
 		
-		Observable<Double> rateObservable = ExchangeRateUtil.calculateUsdToEurExchangeRateHotObservable();
+		Observable<BigDecimal> rateObservable = ExchangeRateUtil.calculateUsdToEurExchangeRateHotObservable();
 		rateObservable.subscribe(
 					(result) ->
 					{

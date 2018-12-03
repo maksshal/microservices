@@ -1,5 +1,7 @@
 package com.microservices.store.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,13 +23,14 @@ public class ExchangeRateUtil
 
 	public static final String USD = "USD";
 	public static final String EUR = "EUR";
+	public static final String UAH = "UAH";
 	
-	public static final Map<String, Double> UAH_EXCHANGE_RATE_DEFAULT;
+	public static final Map<String, BigDecimal> UAH_EXCHANGE_RATE_DEFAULT;
 	static
 	{
-		Map<String, Double> defaults = new HashMap<>();
-		defaults.put(USD, 28.2);
-		defaults.put(EUR, 31.0);
+		Map<String, BigDecimal> defaults = new HashMap<>();
+		defaults.put(USD, new BigDecimal("28.2"));
+		defaults.put(EUR, new BigDecimal("31.0"));
 		UAH_EXCHANGE_RATE_DEFAULT = Collections.unmodifiableMap(defaults);
 	}
 
@@ -35,12 +38,12 @@ public class ExchangeRateUtil
 	 * Calculate USD/EUR using blocking requests
 	 * @return
 	 */
-	public static Double calculateUsdToEurExchangeRate()
+	public static BigDecimal calculateUsdToEurExchangeRate()
 	{
 		ExchangeRate usdToUah = new ExchangeRateMicroserviceCommand(USD).execute();
 		ExchangeRate eurToUah = new ExchangeRateMicroserviceCommand(EUR).execute();
 		
-		return usdToUah.getExchangeRate() / eurToUah.getExchangeRate();
+		return usdToUah.getExchangeRate().divide(eurToUah.getExchangeRate(), 2, RoundingMode.HALF_UP);
 	}
 
 	/**
@@ -49,12 +52,12 @@ public class ExchangeRateUtil
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public static Double calculateUsdToEurExchangeRateAsync() throws InterruptedException, ExecutionException
+	public static BigDecimal calculateUsdToEurExchangeRateAsync() throws InterruptedException, ExecutionException
 	{
 		Future<ExchangeRate> usdToUah = new ExchangeRateMicroserviceCommand(USD).queue();
 		Future<ExchangeRate> eurToUah = new ExchangeRateMicroserviceCommand(EUR).queue();
 		
-		return usdToUah.get().getExchangeRate() / eurToUah.get().getExchangeRate();
+		return usdToUah.get().getExchangeRate().divide(eurToUah.get().getExchangeRate(), 2, RoundingMode.HALF_UP);
 	}
 
 	/**
@@ -63,12 +66,12 @@ public class ExchangeRateUtil
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public static Double calculateUsdToEurExchangeRateCollapsed() throws InterruptedException, ExecutionException
+	public static BigDecimal calculateUsdToEurExchangeRateCollapsed() throws InterruptedException, ExecutionException
 	{
 		Future<ExchangeRate> usdToUah = new ExchangeRateRequestCollapser(USD).queue();
 		Future<ExchangeRate> eurToUah = new ExchangeRateRequestCollapser(EUR).queue();
 		
-		return usdToUah.get().getExchangeRate() / eurToUah.get().getExchangeRate();
+		return usdToUah.get().getExchangeRate().divide(eurToUah.get().getExchangeRate(), 2, RoundingMode.HALF_UP);
 	}
 
 	/**
@@ -77,16 +80,15 @@ public class ExchangeRateUtil
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public static Observable<Double> calculateUsdToEurExchangeRateHotObservable()
+	public static Observable<BigDecimal> calculateUsdToEurExchangeRateHotObservable()
 	{
 		Observable<ExchangeRate> usdToUah = new ExchangeRateMicroserviceCommand(USD).observe();
 		Observable<ExchangeRate> eurToUah = new ExchangeRateMicroserviceCommand(EUR).observe();
 		
-		Observable<Double> usdToEurExchangeRateObservable = Observable.zip(
+		Observable<BigDecimal> usdToEurExchangeRateObservable = Observable.zip(
 				usdToUah,
 				eurToUah,
-				(rateUsd, rateEur) -> rateUsd.getExchangeRate()
-						/ rateEur.getExchangeRate());
+				(rateUsd, rateEur) -> rateUsd.getExchangeRate().divide(rateEur.getExchangeRate(), 2, RoundingMode.HALF_UP));
 		
 		return usdToEurExchangeRateObservable;
 	}
@@ -97,16 +99,15 @@ public class ExchangeRateUtil
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public static Observable<Double> calculateUsdToEurExchangeRateColdObservable()
+	public static Observable<BigDecimal> calculateUsdToEurExchangeRateColdObservable()
 	{
 		Observable<ExchangeRate> usdToUah = new ExchangeRateMicroserviceCommand(USD).toObservable();
 		Observable<ExchangeRate> eurToUah = new ExchangeRateMicroserviceCommand(EUR).toObservable();
 		
-		Observable<Double> usdToEurExchangeRateObservable = Observable.zip(
+		Observable<BigDecimal> usdToEurExchangeRateObservable = Observable.zip(
 				usdToUah,
 				eurToUah,
-				(rateUsd, rateEur) -> rateUsd.getExchangeRate()
-						/ rateEur.getExchangeRate());
+				(rateUsd, rateEur) -> rateUsd.getExchangeRate().divide(rateEur.getExchangeRate(), 2, RoundingMode.HALF_UP));
 		
 		return usdToEurExchangeRateObservable;
 	}

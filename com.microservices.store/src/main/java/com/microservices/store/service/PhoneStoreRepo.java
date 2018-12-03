@@ -1,10 +1,10 @@
 package com.microservices.store.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 /**
  * Repository mock for storing phone prices in USD
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 @Repository
 public class PhoneStoreRepo
 {
-	private static final Map<String, Double> PHONE_PRICES = new HashMap<>();
+	private static final Map<String, BigDecimal> PHONE_PRICES = new HashMap<>();
 	static
 	{
-		PHONE_PRICES.put("Huawei GR5", 200.0);
-		PHONE_PRICES.put("Huawei Y6 Pro", 150.0);
-		PHONE_PRICES.put("Huawei P9 Prestige", 666.66);
+		PHONE_PRICES.put("Huawei GR5", new BigDecimal("200.0"));
+		PHONE_PRICES.put("Huawei Y6 Pro", new BigDecimal("150.0"));
+		PHONE_PRICES.put("Huawei P9 Prestige", new BigDecimal("666.66"));
 		
-		PHONE_PRICES.put("Meizu M2", 100.0);
-		PHONE_PRICES.put("Meizu U10", 200.0);
-		PHONE_PRICES.put("Meizu Pro 6", 300.0);
+		PHONE_PRICES.put("Meizu M2", new BigDecimal("100.0"));
+		PHONE_PRICES.put("Meizu U10", new BigDecimal("200.0"));
+		PHONE_PRICES.put("Meizu Pro 6", new BigDecimal("300.0"));
 	}
 	
-	public double getPhonePriceInUSD(String phoneModel) throws InterruptedException
+	public BigDecimal getPhonePriceInUSD(String phoneModel) throws InterruptedException
 	{
 //		Thread.sleep(10_000);
 		return PHONE_PRICES.get(phoneModel);

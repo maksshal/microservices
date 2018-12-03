@@ -91,8 +91,8 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
         protected Map<String, ExchangeRate> getFallback()
         {
         	Map<String, ExchangeRate> response = new HashMap<>();
-        	response.put(ExchangeRateUtil.USD, new ExchangeRate("UAH", ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
-        	response.put(ExchangeRateUtil.EUR, new ExchangeRate("UAH", ExchangeRateUtil.EUR, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.EUR)));
+        	response.put(ExchangeRateUtil.USD, new ExchangeRate(ExchangeRateUtil.UAH, ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
+        	response.put(ExchangeRateUtil.EUR, new ExchangeRate(ExchangeRateUtil.UAH, ExchangeRateUtil.EUR, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.EUR)));
         	return response;
         }
     }

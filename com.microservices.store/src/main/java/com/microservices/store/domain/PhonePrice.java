@@ -1,14 +1,14 @@
 package com.microservices.store.domain;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 
 public class PhonePrice
 {
 	private String modelName;
-	private Double priceInUSD;
-	private Double priceInUAH;
+	private BigDecimal priceInUSD;
+	private BigDecimal priceInUAH;
 
-	public PhonePrice(String modelName, Double priceInUSD, Double priceInUAH)
+	public PhonePrice(String modelName, BigDecimal priceInUSD, BigDecimal priceInUAH)
 	{
 		this.modelName = modelName;
 		this.priceInUSD = priceInUSD;
@@ -19,12 +19,11 @@ public class PhonePrice
 		return modelName;
 	}
 
-	public String getPriceInUSD() {
-		return new DecimalFormat("###.##").format(priceInUSD);
+	public BigDecimal getPriceInUSD() {
+		return priceInUSD;
 	}
 
-	public String getPriceInUAH() {
-		return new DecimalFormat("###.##").format(priceInUAH);
+	public BigDecimal getPriceInUAH() {
+		return priceInUAH;
 	}
-
 }

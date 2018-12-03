@@ -67,7 +67,7 @@ public class ObservableExchangeRateCommand extends HystrixObservableCommand<Exch
 					//if service is unavailable, generate stream of default values instead
 					while(!subscriber.isUnsubscribed())
                 	{
-						subscriber.onNext(new ExchangeRate("UAH", ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
+						subscriber.onNext(new ExchangeRate(ExchangeRateUtil.UAH, ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
                 		Thread.sleep(1_000);
                 	}
                     subscriber.onCompleted();

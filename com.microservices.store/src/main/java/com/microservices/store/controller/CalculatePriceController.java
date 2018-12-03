@@ -1,5 +1,6 @@
 package com.microservices.store.controller;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -36,20 +37,21 @@ public class CalculatePriceController
 	public PhonePrice getPhonePrice(String phoneModel) throws InterruptedException
 	{
 		RestTemplate restTemplate = new RestTemplate();
-		double exchangeRate;
+		BigDecimal exchangeRate;
 		try
 		{
-			ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, "USD");
+			ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, ExchangeRateUtil.USD);
 			exchangeRate = exchangeRateResponseEntity.getExchangeRate();
 		}
 		catch (Exception e)
 		{
-			LOGGER.error(e.getMessage());
-			exchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get("USD");
+			LOGGER.error(e);
+			exchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD);
 		}
-		
-		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
-		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate);
+
+		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		BigDecimal priceInUAH = phonePriceInUSD.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
+		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
 	}
 
 	/**
@@ -62,11 +64,12 @@ public class CalculatePriceController
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
 	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
 	{
-		ExchangeRateMicroserviceCommandSimple exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommandSimple("USD");
+		ExchangeRateMicroserviceCommandSimple exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommandSimple(ExchangeRateUtil.USD);
 		ExchangeRate exchangeRate = exchangeRateMicroserviceCommand.execute();
-		
-		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
-		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate.getExchangeRate());
+
+		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		BigDecimal priceInUAH =  phonePriceInUSD.multiply(exchangeRate.getExchangeRate()).setScale(2, BigDecimal.ROUND_HALF_UP);
+		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
 	}
 
 	/**
@@ -83,12 +86,12 @@ public class CalculatePriceController
 		
 		try
 		{
-			ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand("USD");
+			ExchangeRateMicroserviceCommand exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommand(ExchangeRateUtil.USD);
 
 			//Here microservice call will be non-blocking...
 			Future<ExchangeRate> exchangeRate = exchangeRateMicroserviceCommand.queue();
 			//...so while it is executing, we may retrieve some info from, lets say, database...
-			double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+			BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
 			//...and only then block
 			ExchangeRate exchangeRateResponse = exchangeRate.get();
 			
@@ -116,7 +119,8 @@ public class CalculatePriceController
 			//in the same Hystrix context
 			LOGGER.info("USD to EUR rate: " + ExchangeRateUtil.calculateUsdToEurExchangeRate());
 
-			return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRateResponse.getExchangeRate());
+			BigDecimal priceInEUR = phonePriceInUSD.multiply(exchangeRateResponse.getExchangeRate()).setScale(2, BigDecimal.ROUND_HALF_UP);
+			return new PhonePrice(phoneModel, phonePriceInUSD, priceInEUR);
 		}
 		finally
 		{
