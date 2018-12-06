@@ -1,6 +1,8 @@
 package com.microservices.hystrix.spring.integration.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,13 +24,17 @@ public class CalculatePriceController
 	private ExchangeRateServiceClient exchangeRateServiceClient;
 	
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
-	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
+	public ResponseEntity<PhonePrice> getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
 	{
-		ExchangeRate exchangeRate = exchangeRateServiceClient.getExchangeRate();
-		
 		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		if(phonePriceInUSD == null)
+		{
+			return new ResponseEntity("Phone price not found.", HttpStatus.BAD_REQUEST);
+		}
+
+		ExchangeRate exchangeRate = exchangeRateServiceClient.getExchangeRate();
 		BigDecimal priceInUAH = phonePriceInUSD.multiply(exchangeRate.getExchangeRate());
 		priceInUAH.setScale(2, BigDecimal.ROUND_HALF_UP);
-		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
+		return new ResponseEntity(new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH), HttpStatus.OK);
 	}
 }

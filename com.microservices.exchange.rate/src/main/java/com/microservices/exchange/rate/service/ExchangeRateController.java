@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,12 +24,20 @@ public class ExchangeRateController
 	private static final Random RANDOM = new Random();
 	
 	@RequestMapping(method = RequestMethod.GET, value = "getCurrentUAHExchangeRate")
-	public ExchangeRate getCurrentUAHExchangeRate(String currency) throws InterruptedException
+	public ResponseEntity<ExchangeRate> getCurrentUAHExchangeRate(String currency) throws InterruptedException
 	{
 		LOGGER.info("Request arrived to get exchange rate for currency: " + currency);
 //		Thread.sleep(10_000);
-		
-		return generateExchangeRate(currency);
+
+		ExchangeRate exchangeRate = generateExchangeRate(currency);
+		if(exchangeRate == null)
+		{
+			return new ResponseEntity("Exchange rate not found.", HttpStatus.BAD_REQUEST);
+		}
+		else
+		{
+			return new ResponseEntity(exchangeRate, HttpStatus.OK);
+		}
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "getCurrentUAHExchangeRateForCurrencies")
@@ -38,7 +49,11 @@ public class ExchangeRateController
 		List<ExchangeRate> exchangeRates = new ArrayList<>();
 		for (String currency : currenciesList)
 		{
-			exchangeRates.add(generateExchangeRate(currency));
+			ExchangeRate exchangeRate = generateExchangeRate(currency);
+			if(exchangeRate != null)
+			{
+				exchangeRates.add(exchangeRate);
+			}
 		}
 		
 		return exchangeRates;
@@ -52,6 +67,11 @@ public class ExchangeRateController
 	private ExchangeRate generateExchangeRate(String currency)
 	{
 		BigDecimal defaultExchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency);
+		if(defaultExchangeRate == null)
+		{
+			return null;
+		}
+
 		BigDecimal deviation = new BigDecimal(RANDOM.nextDouble());
 
 		BigDecimal currentExchangeRate = RANDOM.nextBoolean() ?

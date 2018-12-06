@@ -6,6 +6,8 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +36,14 @@ public class CalculatePriceController
 	 * @throws InterruptedException
 	 */
 	@RequestMapping(value = "getPhonePrice", method = RequestMethod.GET)
-	public PhonePrice getPhonePrice(String phoneModel) throws InterruptedException
+	public ResponseEntity<PhonePrice> getPhonePrice(String phoneModel) throws InterruptedException
 	{
+		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		if(phonePriceInUSD == null)
+		{
+			return new ResponseEntity("Phone price not found.", HttpStatus.BAD_REQUEST);
+		}
+
 		RestTemplate restTemplate = new RestTemplate();
 		BigDecimal exchangeRate;
 		try
@@ -49,9 +57,8 @@ public class CalculatePriceController
 			exchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD);
 		}
 
-		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
 		BigDecimal priceInUAH = phonePriceInUSD.multiply(exchangeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
-		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
+		return new ResponseEntity(new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH), HttpStatus.OK);
 	}
 
 	/**
@@ -62,14 +69,19 @@ public class CalculatePriceController
 	 * @throws ExecutionException
 	 */
 	@RequestMapping(value = "getPhonePriceWithHystrix", method = RequestMethod.GET)
-	public PhonePrice getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
+	public ResponseEntity<PhonePrice> getPhonePriceWithHystrix(String phoneModel) throws InterruptedException
 	{
+		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		if(phonePriceInUSD == null)
+		{
+			return new ResponseEntity("Phone price not found.", HttpStatus.BAD_REQUEST);
+		}
+
 		ExchangeRateMicroserviceCommandSimple exchangeRateMicroserviceCommand = new ExchangeRateMicroserviceCommandSimple(ExchangeRateUtil.USD);
 		ExchangeRate exchangeRate = exchangeRateMicroserviceCommand.execute();
 
-		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
 		BigDecimal priceInUAH =  phonePriceInUSD.multiply(exchangeRate.getExchangeRate()).setScale(2, BigDecimal.ROUND_HALF_UP);
-		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
+		return new ResponseEntity(new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH), HttpStatus.OK);
 	}
 
 	/**
