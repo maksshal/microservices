@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
-//@EnableEurekaClient
+//@EnableEurekaClient  //enable this to register service in Eureka
 public class ExchangeRateApplication
 {
 	public static void main(String[] args)
