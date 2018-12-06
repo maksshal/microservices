@@ -1,4 +1,4 @@
-package com.microservices.store.domain;
+package com.microservices.model;
 
 import java.math.BigDecimal;
 
@@ -19,27 +19,33 @@ public class ExchangeRate
 		this.exchangeRate = exchangeRate;
 	}
 
-	public String getCurrencyToConvertTo() {
+	public String getCurrencyToConvertTo()
+	{
 		return currencyToConvertTo;
 	}
 
-	public void setCurrencyToConvertTo(String currencyToConvertTo) {
+	public void setCurrencyToConvertTo(String currencyToConvertTo)
+	{
 		this.currencyToConvertTo = currencyToConvertTo;
 	}
 
-	public String getCurrencyToConvertFrom() {
+	public String getCurrencyToConvertFrom()
+	{
 		return currencyToConvertFrom;
 	}
 
-	public void setCurrencyToConvertFrom(String currencyToConvertFrom) {
+	public void setCurrencyToConvertFrom(String currencyToConvertFrom)
+	{
 		this.currencyToConvertFrom = currencyToConvertFrom;
 	}
 
-	public BigDecimal getExchangeRate() {
+	public BigDecimal getExchangeRate()
+	{
 		return exchangeRate;
 	}
 
-	public void setExchangeRate(BigDecimal exchangeRate) {
+	public void setExchangeRate(BigDecimal exchangeRate)
+	{
 		this.exchangeRate = exchangeRate;
 	}
 }

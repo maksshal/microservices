@@ -6,16 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.microservices.model.ExchangeRate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.microservices.store.domain.ExchangeRate;
-import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.HystrixCollapser;
 import com.netflix.hystrix.HystrixCollapserKey;
 import com.netflix.hystrix.HystrixCollapserProperties;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+
+import static com.microservices.model.ExchangeRateConst.*;
 
 /**
  * Collapser which will collect all requests during a time window and execute only one HTTP call instead
@@ -91,8 +92,8 @@ public class ExchangeRateRequestCollapser extends HystrixCollapser<Map<String, E
         protected Map<String, ExchangeRate> getFallback()
         {
         	Map<String, ExchangeRate> response = new HashMap<>();
-        	response.put(ExchangeRateUtil.USD, new ExchangeRate(ExchangeRateUtil.UAH, ExchangeRateUtil.USD, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.USD)));
-        	response.put(ExchangeRateUtil.EUR, new ExchangeRate(ExchangeRateUtil.UAH, ExchangeRateUtil.EUR, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(ExchangeRateUtil.EUR)));
+        	response.put(USD, new ExchangeRate(UAH, USD, UAH_EXCHANGE_RATE_DEFAULT.get(USD)));
+        	response.put(EUR, new ExchangeRate(UAH, EUR, UAH_EXCHANGE_RATE_DEFAULT.get(EUR)));
         	return response;
         }
     }

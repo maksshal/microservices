@@ -2,17 +2,16 @@ package com.microservices.store.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.microservices.model.ExchangeRate;
 import rx.Observable;
 
-import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.service.ExchangeRateMicroserviceCommand;
 import com.microservices.store.service.ExchangeRateRequestCollapser;
+
+import static com.microservices.model.ExchangeRateConst.*;
 
 /**
  * Utility methods for testing different Hystrix calls
@@ -20,19 +19,6 @@ import com.microservices.store.service.ExchangeRateRequestCollapser;
 public class ExchangeRateUtil
 {
 	public static final String EXCHANGE_RATE_SERVICE_URL = "http://localhost:7001/getCurrentUAHExchangeRate?currency={currency}";
-
-	public static final String USD = "USD";
-	public static final String EUR = "EUR";
-	public static final String UAH = "UAH";
-	
-	public static final Map<String, BigDecimal> UAH_EXCHANGE_RATE_DEFAULT;
-	static
-	{
-		Map<String, BigDecimal> defaults = new HashMap<>();
-		defaults.put(USD, new BigDecimal("28.2"));
-		defaults.put(EUR, new BigDecimal("31.0"));
-		UAH_EXCHANGE_RATE_DEFAULT = Collections.unmodifiableMap(defaults);
-	}
 
 	/**
 	 * Calculate USD/EUR using blocking requests

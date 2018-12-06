@@ -1,4 +1,4 @@
-package com.microservices.store.domain;
+package com.microservices.model;
 
 import java.math.BigDecimal;
 
@@ -15,15 +15,18 @@ public class PhonePrice
 		this.priceInUAH = priceInUAH;
 	}
 
-	public String getModelName() {
+	public String getModelName()
+	{
 		return modelName;
 	}
 
-	public BigDecimal getPriceInUSD() {
+	public BigDecimal getPriceInUSD()
+	{
 		return priceInUSD;
 	}
 
-	public BigDecimal getPriceInUAH() {
+	public BigDecimal getPriceInUAH()
+	{
 		return priceInUAH;
 	}
 }

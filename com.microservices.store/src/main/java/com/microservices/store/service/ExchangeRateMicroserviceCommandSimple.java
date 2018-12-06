@@ -1,13 +1,15 @@
 package com.microservices.store.service;
 
+import com.microservices.model.ExchangeRate;
 import org.springframework.web.client.RestTemplate;
 
-import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
+
+import static com.microservices.model.ExchangeRateConst.*;
 
 /**
  * Exchange rate command with semaphore isolation
@@ -42,6 +44,6 @@ public class ExchangeRateMicroserviceCommandSimple extends HystrixCommand<Exchan
 	@Override
 	protected ExchangeRate getFallback()
 	{
-		return new ExchangeRate(ExchangeRateUtil.UAH, currency, ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency));
+		return new ExchangeRate(UAH, currency, UAH_EXCHANGE_RATE_DEFAULT.get(currency));
 	}
 }
