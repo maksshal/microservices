@@ -10,6 +10,8 @@ import com.microservices.hystrix.spring.integration.domain.PhonePrice;
 import com.microservices.hystrix.spring.integration.service.ExchangeRateServiceClient;
 import com.microservices.hystrix.spring.integration.service.PhoneStoreRepo;
 
+import java.math.BigDecimal;
+
 @RestController
 public class CalculatePriceController
 {
@@ -24,7 +26,9 @@ public class CalculatePriceController
 	{
 		ExchangeRate exchangeRate = exchangeRateServiceClient.getExchangeRate();
 		
-		double phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
-		return new PhonePrice(phoneModel, phonePriceInUSD, phonePriceInUSD * exchangeRate.getExchangeRate());
+		BigDecimal phonePriceInUSD = phoneStoreRepo.getPhonePriceInUSD(phoneModel);
+		BigDecimal priceInUAH = phonePriceInUSD.multiply(exchangeRate.getExchangeRate());
+		priceInUAH.setScale(2, BigDecimal.ROUND_HALF_UP);
+		return new PhonePrice(phoneModel, phonePriceInUSD, priceInUAH);
 	}
 }

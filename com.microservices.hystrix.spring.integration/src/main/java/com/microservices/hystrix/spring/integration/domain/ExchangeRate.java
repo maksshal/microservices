@@ -1,46 +1,52 @@
 package com.microservices.hystrix.spring.integration.domain;
 
-public class ExchangeRate {
-	
+import java.math.BigDecimal;
+
+public class ExchangeRate
+{
 	private String currencyToConvertTo;
 	private String currencyToConvertFrom;
-	private Double exchangeRate;
+	private BigDecimal exchangeRate;
 
-	public ExchangeRate() {
+	public ExchangeRate()
+	{
 	
 	}
 	
-	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, Double exchangeRate) {
-		super();
+	public ExchangeRate(String currencyToConvertTo, String currencyToConvertFrom, BigDecimal exchangeRate)
+	{
 		this.currencyToConvertTo = currencyToConvertTo;
 		this.currencyToConvertFrom = currencyToConvertFrom;
 		this.exchangeRate = exchangeRate;
 	}
 
-	public String getCurrencyToConvertTo() {
+	public String getCurrencyToConvertTo()
+	{
 		return currencyToConvertTo;
 	}
 
-	public void setCurrencyToConvertTo(String currencyToConvertTo) {
+	public void setCurrencyToConvertTo(String currencyToConvertTo)
+	{
 		this.currencyToConvertTo = currencyToConvertTo;
 	}
 
-	public String getCurrencyToConvertFrom() {
+	public String getCurrencyToConvertFrom()
+	{
 		return currencyToConvertFrom;
 	}
 
-	public void setCurrencyToConvertFrom(String currencyToConvertFrom) {
+	public void setCurrencyToConvertFrom(String currencyToConvertFrom)
+	{
 		this.currencyToConvertFrom = currencyToConvertFrom;
 	}
 
-	public Double getExchangeRate() {
+	public BigDecimal getExchangeRate()
+	{
 		return exchangeRate;
 	}
 
-	public void setExchangeRate(Double exchangeRate) {
+	public void setExchangeRate(BigDecimal exchangeRate)
+	{
 		this.exchangeRate = exchangeRate;
 	}
-	
-	
-
 }

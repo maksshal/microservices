@@ -1,29 +1,32 @@
 package com.microservices.hystrix.spring.integration.domain;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 
-public class PhonePrice {
+public class PhonePrice
+{
 	private String modelName;
-	private Double priceInUSD;
-	private Double priceInUAH;
+	private BigDecimal priceInUSD;
+	private BigDecimal priceInUAH;
 
-	public PhonePrice(String modelName, Double priceInUSD, Double priceInUAH) {
-		super();
+	public PhonePrice(String modelName, BigDecimal priceInUSD, BigDecimal priceInUAH)
+	{
 		this.modelName = modelName;
 		this.priceInUSD = priceInUSD;
 		this.priceInUAH = priceInUAH;
 	}
 
-	public String getModelName() {
+	public String getModelName()
+	{
 		return modelName;
 	}
 
-	public String getPriceInUSD() {
-		return new DecimalFormat("###.##").format(priceInUSD);
+	public BigDecimal getPriceInUSD()
+	{
+		return priceInUSD;
 	}
 
-	public String getPriceInUAH() {
-		return new DecimalFormat("###.##").format(priceInUAH);
+	public BigDecimal getPriceInUAH()
+	{
+		return priceInUAH;
 	}
-
 }

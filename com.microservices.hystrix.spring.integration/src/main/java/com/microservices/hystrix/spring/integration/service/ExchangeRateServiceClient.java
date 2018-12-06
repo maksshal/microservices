@@ -9,11 +9,14 @@ import com.microservices.hystrix.spring.integration.domain.ExchangeRate;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
+import java.math.BigDecimal;
+
 @Service
 public class ExchangeRateServiceClient
 {
 	private static final Logger LOGGER = Logger.getLogger(ExchangeRateServiceClient.class);
-	
+	public static final String EXCHANGE_RATE_ENDPOINT = "http://exchange-rate/getCurrentUAHExchangeRate?currency={currency}";
+
 	@Autowired
 	private RestTemplate restTemplate;
 	
@@ -21,13 +24,13 @@ public class ExchangeRateServiceClient
 			commandProperties = {@HystrixProperty(name="execution.isolation.strategy", value="THREAD")})
     public ExchangeRate getExchangeRate()
 	{
-		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject("http://exchange-rate/getCurrentUAHExchangeRate?currency={currency}", ExchangeRate.class, "USD");
+		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(EXCHANGE_RATE_ENDPOINT, ExchangeRate.class, "USD");
 		return exchangeRateResponseEntity;
     }
  
     public ExchangeRate defaultExchangeRate()
     {
     	LOGGER.info("Executing fallback");
-        return new ExchangeRate("UAH", "USD", 22.7);
+        return new ExchangeRate("UAH", "USD", new BigDecimal("28.1"));
     }
 }
