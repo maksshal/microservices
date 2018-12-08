@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.microservices.model.ExchangeRateDefaults.*;
+
 @RestController
 public class ExchangeRateController
 {
@@ -75,7 +77,7 @@ public class ExchangeRateController
 		BigDecimal currentExchangeRate = RANDOM.nextBoolean() ?
 				defaultExchangeRate.add(deviation) : defaultExchangeRate.subtract(deviation);
 		currentExchangeRate = currentExchangeRate.setScale(2, BigDecimal.ROUND_HALF_UP);
-		return new ExchangeRate("UAH", currency, currentExchangeRate);
+		return new ExchangeRate(UAH, currency, currentExchangeRate);
 	}
 	
 	@RequestMapping(value = "/")

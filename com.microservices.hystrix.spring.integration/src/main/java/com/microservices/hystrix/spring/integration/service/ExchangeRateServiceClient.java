@@ -11,6 +11,8 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import java.math.BigDecimal;
 
+import static com.microservices.model.ExchangeRateDefaults.*;
+
 @Service
 public class ExchangeRateServiceClient
 {
@@ -24,13 +26,13 @@ public class ExchangeRateServiceClient
 			commandProperties = {@HystrixProperty(name="execution.isolation.strategy", value="THREAD")})
 	public ExchangeRate getExchangeRate()
 	{
-		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(EXCHANGE_RATE_ENDPOINT, ExchangeRate.class, "USD");
+		ExchangeRate exchangeRateResponseEntity = restTemplate.getForObject(EXCHANGE_RATE_ENDPOINT, ExchangeRate.class, USD);
 		return exchangeRateResponseEntity;
 	}
  
 	public ExchangeRate defaultExchangeRate()
 	{
 		LOGGER.info("Executing fallback");
-		return new ExchangeRate("UAH", "USD", new BigDecimal("28.1"));
+		return new ExchangeRate(UAH, USD, new BigDecimal("28.1"));
 	}
 }
