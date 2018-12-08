@@ -11,7 +11,7 @@ import rx.Observable;
 import com.microservices.store.service.ExchangeRateMicroserviceCommand;
 import com.microservices.store.service.ExchangeRateRequestCollapser;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 /**
  * Utility methods for testing different Hystrix calls

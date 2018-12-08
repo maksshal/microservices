@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.microservices.model.ExchangeRate;
+import com.microservices.model.ExchangeRateDefaults;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.microservices.exchange.rate.domain.ExchangeRate;
-import com.microservices.exchange.rate.util.ExchangeRateUtil;
 
 @RestController
 public class ExchangeRateController
@@ -65,7 +64,7 @@ public class ExchangeRateController
 	 */
 	private ExchangeRate generateExchangeRate(String currency)
 	{
-		BigDecimal defaultExchangeRate = ExchangeRateUtil.UAH_EXCHANGE_RATE_DEFAULT.get(currency);
+		BigDecimal defaultExchangeRate = ExchangeRateDefaults.UAH_EXCHANGE_RATE_DEFAULT.get(currency);
 		if(defaultExchangeRate == null)
 		{
 			return null;

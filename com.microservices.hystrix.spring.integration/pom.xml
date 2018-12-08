@@ -45,6 +45,11 @@
  			<groupId>org.springframework.cloud</groupId>
  			<artifactId>spring-cloud-starter-eureka</artifactId>
  		</dependency>
+		<dependency>
+			<groupId>com.microservices</groupId>
+			<artifactId>model</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

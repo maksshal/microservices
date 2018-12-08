@@ -10,7 +10,7 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 public class ExchangeRateMicroserviceCommand extends HystrixCommand<ExchangeRate>
 {

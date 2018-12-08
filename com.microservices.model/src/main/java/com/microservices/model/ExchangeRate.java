@@ -2,6 +2,9 @@ package com.microservices.model;
 
 import java.math.BigDecimal;
 
+/**
+ * Contains exchange rate for two currencies
+ */
 public class ExchangeRate
 {
 	private String currencyToConvertTo;

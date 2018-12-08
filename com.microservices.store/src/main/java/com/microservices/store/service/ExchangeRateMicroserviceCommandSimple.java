@@ -9,7 +9,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 /**
  * Exchange rate command with semaphore isolation

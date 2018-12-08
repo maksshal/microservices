@@ -5,12 +5,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExchangeRateConst
+public class ExchangeRateDefaults
 {
     public static final String USD = "USD";
     public static final String EUR = "EUR";
     public static final String UAH = "UAH";
 
+    /**
+     * UAH exchange rate defaults
+     */
     public static final Map<String, BigDecimal> UAH_EXCHANGE_RATE_DEFAULT;
     static
     {

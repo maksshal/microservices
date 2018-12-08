@@ -3,12 +3,12 @@ package com.microservices.store;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 
+import com.microservices.model.ExchangeRate;
 import org.apache.log4j.Logger;
 
 import rx.Observable;
 import rx.Subscriber;
 
-import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.service.ObservableExchangeRateCommand;
 import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;

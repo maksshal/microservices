@@ -1,18 +1,18 @@
 package com.microservices.store.service;
 
-import com.microservices.model.ExchangeRateConst;
+import com.microservices.model.ExchangeRate;
+import com.microservices.model.ExchangeRateDefaults;
 import org.springframework.web.client.RestTemplate;
 
 import rx.Observable;
 import rx.Subscriber;
 
-import com.microservices.store.domain.ExchangeRate;
 import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 /**
  * Generate stream of exchange rates from the service using observable pattern
@@ -43,7 +43,7 @@ public class ObservableExchangeRateCommand extends HystrixObservableCommand<Exch
 					//retrieve data from service as long as we are subscribed
 					while(!subscriber.isUnsubscribed())
 					{
-						subscriber.onNext(restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, ExchangeRateConst.USD));
+						subscriber.onNext(restTemplate.getForObject(ExchangeRateUtil.EXCHANGE_RATE_SERVICE_URL, ExchangeRate.class, ExchangeRateDefaults.USD));
 						Thread.sleep(1_000);
 					}
 					

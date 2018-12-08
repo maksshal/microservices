@@ -16,7 +16,7 @@ import com.netflix.hystrix.HystrixCollapserProperties;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 /**
  * Collapser which will collect all requests during a time window and execute only one HTTP call instead

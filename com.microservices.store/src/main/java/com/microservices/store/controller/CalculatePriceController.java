@@ -21,7 +21,7 @@ import com.microservices.store.service.PhoneStoreRepo;
 import com.microservices.store.util.ExchangeRateUtil;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
-import static com.microservices.model.ExchangeRateConst.*;
+import static com.microservices.model.ExchangeRateDefaults.*;
 
 @RestController
 public class CalculatePriceController
