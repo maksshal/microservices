@@ -2,3 +2,9 @@
 RemoteSystemsTempFiles
 .settings
 target
+.idea
+/com.microservices.exchange.rate/exchange.rate.iml
+/com.microservices.hystrix.spring.integration/hystrix.spring.integration.iml
+/com.microservices.model/model.iml
+/com.microservices.store/store.iml
+/eureka/eureka.iml
